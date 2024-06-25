@@ -1,36 +1,57 @@
-
 const http = require('http').createServer();
-
 const io = require('socket.io')(http, {
     cors: { origin: "*" }
 });
 
+// Event listener for new connections
 io.on('connection', (socket) => {
-    console.log('a user connected');
+    console.log('A user connected:', socket.id);
 
-    socket.on('message', (message) =>     {
-        console.log(message);
-        io.emit('message', `${socket.id.substr(0,2)} said ${message}` );   
+    // Listen for 'client_called' event from clients
+    socket.on('client_called', (data) => {
+        console.log("Test case");
+        // Broadcast the 'client_called' event to all connected clients
+        io.emit('client_arrived', data);
     });
+
+    socket.on('window_update', (data) => {
+        console.log("Test case2");
+        // Broadcast the 'client_called' event to all connected clients
+        io.emit('window_updated', data);
+    });
+
+    // When a window update occurs
+    socket.on('window_update', (data) => {
+        io.emit('window_updated', data); // Broadcast to all clients
+    });
+    // Handle disconnection
+    socket.on('disconnect', () => {
+        console.log('A user disconnected:', socket.id);
+    });
+    // New event handler for queueNumber in android
+    socket.on('queueNumber', (data) => {
+        console.log("Test case marielle");
+        console.log('Queue Number received:', data);
+        // Broadcast the queue number to all connected clients
+        io.emit('new_queue_item', data);
+
+    });
+
+    // // Simulate sending new client data
+    // setInterval(() => {
+    //     const clientData = {
+    //         clientName: `Client ${Math.floor(Math.random() * 100)}`,
+    //         queueNumber: Math.floor(Math.random() * 100),
+    //         serviceType: 'Service A',
+    //         actionType: 'Action A',
+    //         transactionDate: new Date().toLocaleDateString(),
+    //         transactionTime: new Date().toLocaleTimeString()
+    //     };
+    //     io.emit('new_client', clientData);
+    // }, 5000); // Emit every 5 seconds (for demonstration)
 });
 
-http.listen(8080, () => console.log('listening on http://localhost:8080') );
-
-
-// Regular Websockets
-
-// const WebSocket = require('ws')
-// const server = new WebSocket.Server({ port: '8080' })
-
-// server.on('connection', socket => { 
-
-//   socket.on('message', message => {
-
-//     socket.send(`Roger that! ${message}`);
-
-//   });
-
-// });
-
-
- 
+// Start the HTTP server and listen on port 8080
+http.listen(8080, () => {
+    console.log('Listening on http://localhost:8080');
+});
