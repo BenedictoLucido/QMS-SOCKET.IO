@@ -12,17 +12,28 @@ io.on('connection', (socket) => {
         console.log("Test case");
         // Broadcast the 'client_called' event to all connected clients
         io.emit('client_arrived', data);
+        io.emit('update_statistics'); // Notify to update statistics
+
+        // Extract window ID dynamically from the data object
+        const displayData = {
+            window: data.window, // Use the window ID from the data object
+            queueNumber: data.queueNumber,
+            clientName: data.clientName
+        };
+        io.emit('update_display', displayData);
     });
 
     socket.on('window_update', (data) => {
         console.log("Test case2");
         // Broadcast the 'client_called' event to all connected clients
         io.emit('window_updated', data);
+        io.emit('update_statistics'); // Notify to update statistics
     });
 
     // When a window update occurs
     socket.on('window_update', (data) => {
         io.emit('window_updated', data); // Broadcast to all clients
+        io.emit('update_statistics'); // Notify to update statistics
     });
     // Handle disconnection
     socket.on('disconnect', () => {
@@ -34,6 +45,7 @@ io.on('connection', (socket) => {
         console.log('Queue Number received:', data);
         // Broadcast the queue number to all connected clients
         io.emit('new_queue_item', data);
+        io.emit('update_statistics'); // Notify to update statistics
 
     });
 
