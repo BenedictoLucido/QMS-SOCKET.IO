@@ -30,6 +30,16 @@ io.on('connection', (socket) => {
         io.emit('update_statistics'); // Notify to update statistics
     });
 
+    // New event listener for marking a client as done
+    socket.on('mark_as_done', (data) => {
+        console.log('Client marked as done:', data);
+        io.emit('mark_as_done', data);
+    });
+    socket.on('mark_as_cancelled', (data) => {
+        io.emit('mark_as_cancelled', data);
+    });
+
+
     // New event listener for removing client rows
     socket.on('remove_client_row', (data) => {
         console.log('Removing client row:', data);
