@@ -23,22 +23,24 @@ io.on('connection', (socket) => {
         io.emit('update_display', displayData);
     });
 
-    socket.on('window_update', (data) => {
-        console.log("Test case2");
-        // Broadcast the 'client_called' event to all connected clients
-        io.emit('window_updated', data);
-        io.emit('update_statistics'); // Notify to update statistics
-    });
-
     // When a window update occurs
     socket.on('window_update', (data) => {
+        console.log("Test case2");
         io.emit('window_updated', data); // Broadcast to all clients
         io.emit('update_statistics'); // Notify to update statistics
     });
+
+    // New event listener for removing client rows
+    socket.on('remove_client_row', (data) => {
+        console.log('Removing client row:', data);
+        io.emit('remove_client_row', data);
+    });
+
     // Handle disconnection
     socket.on('disconnect', () => {
         console.log('A user disconnected:', socket.id);
     });
+
     // New event handler for queueNumber in android
     socket.on('queueNumber', (data) => {
         console.log("Test case marielle");
@@ -46,10 +48,9 @@ io.on('connection', (socket) => {
         // Broadcast the queue number to all connected clients
         io.emit('new_queue_item', data);
         io.emit('update_statistics'); // Notify to update statistics
-
     });
 
-    // // Simulate sending new client data
+    // Simulate sending new client data (for demonstration)
     // setInterval(() => {
     //     const clientData = {
     //         clientName: `Client ${Math.floor(Math.random() * 100)}`,
