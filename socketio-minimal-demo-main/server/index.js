@@ -1,7 +1,19 @@
-const http = require('http').createServer();
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+const http = require('http').createServer(app);
 const io = require('socket.io')(http, {
     cors: { origin: "*" }
 });
+
+app.use(bodyParser.json());
+
+app.post('/emit', (req, res) => {
+    const { event, message } = req.body;
+    io.emit(event, message);
+    res.send({ status: 'ok' });
+});
+
 
 // Event listener for new connections
 io.on('connection', (socket) => {
